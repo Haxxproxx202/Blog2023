@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.urls import reverse
 
 CustomUser = settings.AUTH_USER_MODEL
 
@@ -35,5 +36,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('app:post_detail',
+                       args=[self.publish.year,
+                             self.publish.strftime('%m'),
+                             self.publish.strftime('%d'),
+                             self.slug])
 
 
