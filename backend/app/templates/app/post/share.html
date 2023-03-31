@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+
+{% block title %} Share post {% endblock %}
+
+{% block content %}
+{% if sent %}
+<h1>The email has been sent</h1>
+<p>
+    Sending the post "{{ post.title }}" to {{ form.cleaned_data.recepient }} was successful.
+</p>
+{% else %}
+<h1>Share "{{ post.title }}" via email</h1>
+<form action="." method="POST">
+<!--    {% for field in form %}-->
+<!--    {{ field.errors }}-->
+<!--    {{ field.label_tag }} {{ field }}-->
+    {{ form.as_p }}
+    {% csrf_token %}
+<!--    {% endfor %}-->
+    <input type="submit" value="Send">
+</form>
+{% endif %}
+{% endblock %}
