@@ -11,12 +11,10 @@
 {% else %}
 <h1>Share "{{ post.title }}" via email</h1>
 <form action="." method="POST">
-<!--    {% for field in form %}-->
-<!--    {{ field.errors }}-->
-<!--    {{ field.label_tag }} {{ field }}-->
+
     {{ form.as_p }}
     {% csrf_token %}
-<!--    {% endfor %}-->
+
     <input type="submit" value="Send">
 </form>
 {% endif %}
