@@ -90,3 +90,13 @@ input[type=submit] {
     font-size:12px;
     color:#666;
 }
+
+.header button {
+    margin-top: 10px;
+    font-weight:bold;
+    background:#00abff;
+    color:#fff;
+    padding:10px 20px;
+    font-size:14px;
+    text-transform:uppercase;
+}
