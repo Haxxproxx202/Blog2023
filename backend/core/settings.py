@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'app',
     'users',
     # 3rd Party apps
+    'taggit',
 ]
 
 MIDDLEWARE = [

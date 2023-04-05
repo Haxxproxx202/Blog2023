@@ -3,33 +3,41 @@ from django.core.mail import send_mail
 from django.views.generic import ListView
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm
+from taggit.models import Tag
 
 
-# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-#
-# def post_list(request):
-#     object_list = Post.published.all()
-#
-#     paginator = Paginator(object_list, 2)
-#     page = request.GET.get('page')
-#     print(page)
-#     try:
-#         posts = paginator.page(page)
-#     except PageNotAnInteger:
-#         posts = paginator.page(1)
-#     except EmptyPage:
-#         posts = paginator.page(paginator.num_pages)
-#
-#     ctx = {'posts': posts, 'page': page}
-#
-#     return render(request, 'app/post/list.html', ctx)
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-class PostListView(ListView):
-    queryset = Post.published.all()
-    # model = Post
-    template_name = 'app/post/list.html'
-    context_object_name = 'posts'  # default name = object_list
-    paginate_by = 2
+
+def post_list(request, tag_slug=None):
+    object_list = Post.published.all()
+    tag = None
+
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        object_list = object_list.filter(tags__in=[tag])
+
+    paginator = Paginator(object_list, 2)
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    ctx = {'posts': posts,
+           'page': page,
+           'tag': tag}
+
+    return render(request, 'app/post/list.html', ctx)
+
+# class PostListView(ListView):
+#     queryset = Post.published.all()
+#     # model = Post
+#     template_name = 'app/post/list.html'
+#     context_object_name = 'posts'  # default name = object_list
+#     paginate_by = 2
 
 
 def post_share(request, post_id):
