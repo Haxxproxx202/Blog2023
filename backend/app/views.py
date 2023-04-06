@@ -5,13 +5,21 @@ from django.views.generic import ListView
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm, SearchForm
 from taggit.models import Tag
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery, TrigramSimilarity
 
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def post_list(request, tag_slug=None):
+    """
+    Render a paginated list of published blog posts.
+
+    :param request: the HTTP request object
+    :param tag_slug: a clicked Tag slug
+
+    :return: If tag_slug provided, filter posts be the corresponding Tag object
+    """
     object_list = Post.published.all()
     tag = None
 
@@ -34,6 +42,8 @@ def post_list(request, tag_slug=None):
 
     return render(request, 'app/post/list.html', ctx)
 
+
+# Alternative option for post_list function, but without Tag objects
 # class PostListView(ListView):
 #     queryset = Post.published.all()
 #     # model = Post
@@ -43,6 +53,14 @@ def post_list(request, tag_slug=None):
 
 
 def post_share(request, post_id):
+    """
+    Render a form to share a published blog post via email.
+
+    :param request: the HTTP request object
+    :param post_id: the ID of the published post to be shared
+
+    :return: if POST and the form is valid, send an email with the post information and render a confirmation page.
+    """
     post = get_object_or_404(Post, id=post_id, status='published')
     sent = False
 
@@ -63,6 +81,18 @@ def post_share(request, post_id):
 
 
 def post_detail(request, year, month, day, post):
+    """
+    Render a detailed view of a published blog post and handle the addition of new comments
+
+    :param year:
+    :param request: HTTP request object
+    :param year, month, day: publication date
+    :param post: slug of the post
+
+    :return:
+    -GET: detailed view of the post with comments and a form to add new comments
+    -POST: refreshed view with new comment
+    """
     post = get_object_or_404(Post,
                              slug=post,
                              status='published',
@@ -100,6 +130,13 @@ def post_detail(request, year, month, day, post):
 
 
 def post_search(request):
+    """
+    Search for published posts that match the provided query
+
+    :param request: HTTP request object
+
+    :return: Render the results
+    """
     form = SearchForm()
     query = None
     results = []
@@ -107,11 +144,36 @@ def post_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
+            search_vector = SearchVector('title', 'body')
+            search_query = SearchQuery(query)
             results = Post.published.annotate(
-                search=SearchVector('title', 'body'),
-            ).filter(search=query)
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)
+            ).filter(search=search_query). order_by('-rank')
     return render(request,
                   'app/post/search.html',
                   {'form': form,
                    'query': query,
                    'results': results})
+
+# TRIGRAM SIMILARITY
+
+# def post_search(request):
+#     form = SearchForm()
+#     query = None
+#     results = []
+#     if 'query' in request.GET:
+#         form = SearchForm(request.GET)
+#         if form.is_valid():
+#             query = form.cleaned_data['query']
+#             search_vector = SearchVector('title', weight='A') + SearchVector('body', weight='B')
+#             search_query = SearchQuery(query)
+#             results = Post.published.annotate(
+#                 similarity=TrigramSimilarity('title', query)
+#                 # rank=SearchRank(search_vector, search_query)
+#             ).filter(similarity__gt=0.1).order_by('-similarity')
+#     return render(request,
+#                   'app/post/search.html',
+#                   {'form': form,
+#                    'query': query,
+#                    'results': results})
