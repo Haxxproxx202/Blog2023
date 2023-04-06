@@ -1,13 +1,19 @@
 {% extends 'app/base.html' %}
 {% load app_tags %}
+{% load static %}
 
 {% block title %} My own blog {% endblock %}
 
 
 {% block content %}
-    <h1>My blog</h1>
+    <h1>All posts</h1>
     {% if tag %}
-        <h2>Posts marked with a "{{ tag.name }}" tag</h2>
+        <div>
+            <h2 style="background: #dcdbdb; border-radius: 10px; padding: 15px">
+                Posts marked with a "{{ tag.name }}" tag:
+                <img class="arrow" src="{% static 'images/down-arrow.png' %}" alt="Not found">
+            </h2>
+        </div>
     {% endif %}
     {% for post in posts %}
         <h2>
@@ -24,6 +30,7 @@
         </p>
         <p class="date">Published: {{ post.publish }} by {{ post.author }}</p>
         {{ post.body|markdown|truncatewords_html:30 }}
+        <p style="border-bottom:1px solid #bbb"></p>
     {% endfor %}
 
     {% include "pagination.html" with page=posts %}

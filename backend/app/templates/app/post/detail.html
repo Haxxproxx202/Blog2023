@@ -9,6 +9,7 @@
     Published {{ post.publish }} by {{ post.author }}
 </p>
 {{ post.body|markdown }}
+<p style="border-bottom:1px solid #bbb"></p>
 <p>
     <a href="{% url 'app:post_share' post.id %}">
         Share
@@ -45,7 +46,7 @@ No similar posts
 {% endfor %}
 
 {% if new_comment %}
-    <h2>Your comment has been added.</h2>
+    <h1 style="color: green; font-weight: bold">Your comment has been added!</h1>
 {% else %}
     <h2>Add new comment</h2>
     <form action="." method="POST">
