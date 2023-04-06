@@ -15,7 +15,12 @@
     {% endblock %}
 </div>
 <div id="sidebar">
-    <h2>My blog</h2>
+    <h1>My blog</h1>
+    <img class="search_icon"
+         src="{% static 'images/search.png' %}"
+         alt="Not found"
+         onclick="document.location.href='/app/search'"
+    >
     <p>Number of posts: {% total_posts %}</p>
     <h3>Newest posts</h3>
     {% show_latest_posts 3 %}

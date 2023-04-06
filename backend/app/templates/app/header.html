@@ -1,3 +1,14 @@
+{% load static %}
+
 <div class="header">
+    <img src="{% static 'images/blog_icon.png' %}"
+         alt="No found"
+         onclick="document.location.href='/app'"
+    >
+    <p>
+        <img src="{% static 'images/pj_blog_text.png' %}" alt="Not found">
+    </p>
+</div>
+<div class="back_button">
     <button onclick="history.back()">Back</button>
 </div>

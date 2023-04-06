@@ -1,0 +1,26 @@
+{% extends 'app/base.html' %}
+{% load app_tags %}
+
+{% block title %} Search {% endblock %}
+
+{% block content %}
+
+  {% if query %}
+    <h1>Posts containing "{{ query }}"</h1>
+    <h3>Found {{ total_results }} result{{ total_results|pluralize:"s" }} </h3>
+    {% for post in results %}
+      <h4><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h4>
+      {{ post.body|markdown|truncatewords_html:5 }}
+    {% empty %}
+      <p>No results found</p>
+    {% endfor %}
+    <p><a href="{% url 'app:post_search' %}">Search again</a></p>
+  {% else %}
+    <h1>Search posts</h1>
+    <form method="GET">
+      {{ form.as_p }}
+      <input type="submit" value="Search">
+    </form>
+  {% endif %}
+
+{% endblock %}
